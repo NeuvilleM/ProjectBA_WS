@@ -1,4 +1,8 @@
 ﻿using ProjectWS.Common;
+using Windows.ApplicationModel.DataTransfer;
+using System.Text;
+using Windows.Storage.Streams;
+
 //using ProjectWS.Data;
 using ProjectWS.DataModel;
 using System;
@@ -49,6 +53,14 @@ namespace ProjectWS
             this.InitializeComponent();
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += navigationHelper_LoadState;
+            this.navigationHelper.SaveState += navigationHelper_SaveState;
+        }
+
+        void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
+        {
+            // Deregister the DataRequested event handler
+            DataTransferManager.GetForCurrentView().DataRequested -= OnDataRequested;
+
         }
 
         /// <summary>
@@ -67,7 +79,28 @@ namespace ProjectWS
             // TODO: Create an appropriate data model for your problem domain to replace the sample data
             var item = await FestivalDataSource.GetItemAsync((String)e.NavigationParameter);
             this.DefaultViewModel["Item"] = item;
+            // Register for DataRequested events
+            DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
+            
         }
+        void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            var request = args.Request;
+            var item = (lineupItem)this.defaultViewModel["Item"];
+            request.Data.Properties.Title = item.artiest.Name;
+            request.Data.Properties.Description = "Artist in the spotlight.";
+
+            // Share recipe text
+            var recipe = "\r\nGenres:\r\n";
+            recipe += String.Join("\r\n", item.artiest.Genres);
+            recipe += ("\r\n\r\nDiscription\r\n" + item.artiest.Description);
+            request.Data.SetText(recipe);
+            var reference = RandomAccessStreamReference.CreateFromUri(new Uri(item.artiest.Picture));
+            request.Data.Properties.Thumbnail = reference;
+            request.Data.SetBitmap(reference);
+
+        }
+
 
         #region NavigationHelper registration
 

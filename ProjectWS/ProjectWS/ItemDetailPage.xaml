@@ -43,7 +43,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Image Margin="97,50,102,94" Source="{Binding artiest.Picture}"/>
+            <Image Margin="97,0,102,94" Source="{Binding artiest.Picture}" MinWidth="500" MinHeight="500" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="UniformToFill"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Left" Height="608" Margin="10,50,0,-30" VerticalAlignment="Top" Width="663">
                 <TextBlock TextWrapping="Wrap" Margin="4" Text="Genres:" FontSize="22" FontWeight="Bold"/>
                 <TextBlock TextWrapping="Wrap" Margin="4" Text="{Binding artiest.Genres, Converter={StaticResource ListToStringConverter}}" FontSize="20"/>
