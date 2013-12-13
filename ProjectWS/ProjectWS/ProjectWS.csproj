@@ -138,6 +138,7 @@
     <None Include="Common\ReadMe.txt" />
     <Compile Include="DataModel\FestivalDataSource.cs" />
     <None Include="DataModel\values.json" />
+    <None Include="packages.config" />
     <None Include="ProjectWS_TemporaryKey.pfx" />
     <Content Include="DataModel\SampleData.json" />
   </ItemGroup>
@@ -175,6 +176,9 @@
   <ItemGroup>
     <Reference Include="MySql.Data.RT">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 6.8.1\Assemblies\RT\MySql.Data.RT.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\netcore45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

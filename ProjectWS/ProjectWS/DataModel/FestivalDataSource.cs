@@ -5,12 +5,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
+using Newtonsoft.Json;
 
 namespace ProjectWS.DataModel
 {
@@ -107,11 +110,24 @@ namespace ProjectWS.DataModel
         public FestivalDataSource()
         {
             this.Stages = new ObservableCollection<StageGroup>();
-            this.GetSampleDataAsync();
+            //this.GetSampleDataAsync();
             Debug.WriteLine("Test");
         }
 
         private static FestivalDataSource _sampleDataSource = new FestivalDataSource();
+
+        //public void LoadData()
+        //{
+        //    if (this.IsDataLoaded == false)
+        //    {
+        //        this.Stages.Clear();
+        //        //this.Stages.Add(new ItemViewModel() { ID = "0", LineOne = "Please Wait...", LineTwo = "Please wait while the catalog is downloaded from the server.", LineThree = null });
+        //        WebClient webClient = new WebClient();
+        //        webClient.Headers["Accept"] = "application/json";
+        //        webClient.DownloadStringCompleted += new DownloadStringCompletedEventHandler(webClient_DownloadCatalogCompleted);
+        //        webClient.DownloadStringAsync(new Uri(apiUrl));
+        //    }
+        //}
 
         public static async Task<IEnumerable<StageGroup>> GetGroupsAsync()
         {
@@ -150,20 +166,22 @@ namespace ProjectWS.DataModel
             if (this._stages.Count != 0)
                 return;
             // inladen data via REST-server
-            /*
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new
-            System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = await client.GetAsync("http://localhost/api/picture");
-            if (response.IsSuccessStatusCode)
-            {
-                Stream stream = await response.Content.ReadAsStreamAsync();
-            }
-            */
-            Uri dataUri = new Uri("ms-appx:///DataModel/values.json");
             
+            HttpClient client = new HttpClient();
+            //client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("accept", "application/json");
+            string jsonText = await client.GetStringAsync(new Uri("http://localhost:5096/api/values"));
+            /*if (response.IsSuccessStatusCode)
+            {
+                //Stream stream = await response.Content.ReadAsStreamAsync();
+                string jsonText = response.Content();
+            }
+            else { 
+            Uri dataUri = new Uri("ms-appx:///DataModel/values.json");
+            //Uri dataUri = new Uri("http://localhost:5096/api/values");
             StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(dataUri);
             string jsonText = await FileIO.ReadTextAsync(file);
+            }*/
             jsonText = "{"+'"'+"Stages"+'"'+":" + jsonText + "}";
             JsonObject jsonObject = JsonObject.Parse(jsonText);
             JsonArray jsonArray = jsonObject["Stages"].GetArray();
@@ -218,5 +236,7 @@ namespace ProjectWS.DataModel
             }
         }
 
+
+        public bool IsDataLoaded { get; set; }
     }
 }
