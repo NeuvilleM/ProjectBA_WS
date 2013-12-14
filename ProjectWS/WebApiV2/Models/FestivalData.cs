@@ -6,6 +6,7 @@ using MySql.Data;
 using MySql.Web;
 using System.Collections.ObjectModel;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace JSONapi.Models
 {
@@ -28,12 +29,12 @@ namespace JSONapi.Models
             // https://blogs.oracle.com/MySqlOnWindows/entry/how_to_using_connector_net
             //		per stage de linups ophalen
             //			per linup de matchende band ophalen
-            using (MySqlConnection connection = new MySqlConnection("Server=localhost;Port=3306;Database=festivalapp;Uid=root;Pwd=root"))
+            using (SqlConnection connection = new SqlConnection("Data Source=GHOST\\SQLEXPRESS;Initial Catalog=festivalapp;User ID=SSAUserV2;Password=P@ssw0rd"))
             {
                 connection.Open();
                 // stage list
-                MySqlCommand stagesCommand = new MySqlCommand("SELECT * FROM stages", connection);
-                using (MySqlDataReader reader = stagesCommand.ExecuteReader())
+                SqlCommand stagesCommand = new SqlCommand("SELECT * FROM stages", connection);
+                using (SqlDataReader reader = stagesCommand.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -42,29 +43,29 @@ namespace JSONapi.Models
                         if (Int32.TryParse(group.UniqueId, out i) && i > 0)
                         {
                             string sql = "SELECT * FROM lineup WHERE Stage = " + i.ToString();
-                            MySqlConnection conlinup = new MySqlConnection("Server=localhost;Port=3306;Database=festivalapp;Uid=root;Pwd=root");
+                            SqlConnection conlinup = new SqlConnection("Data Source=GHOST\\SQLEXPRESS;Initial Catalog=festivalapp;User ID=SSAUserV2;Password=P@ssw0rd");
                             conlinup.Open();
-                            MySqlCommand lineupCommand = new MySqlCommand(sql, conlinup);
-                            using (MySqlDataReader readerlineup = lineupCommand.ExecuteReader())
+                            SqlCommand lineupCommand = new SqlCommand(sql, conlinup);
+                            using (SqlDataReader readerlineup = lineupCommand.ExecuteReader())
                             {
                                 ObservableCollection<lineupItem> lineups = new ObservableCollection<lineupItem>();
                                 while (readerlineup.Read())
                                 {
                                     ArtiestItem artiest = new ArtiestItem("-1", "", "ERROR", "ERROR artiest is null", "", "", new List<string>());
                                     string sqlartist = "SELECT * FROM artist WHERE Id=" + readerlineup["Artist"].ToString();
-                                    MySqlConnection conartist = new MySqlConnection("Server=localhost;Port=3306;Database=festivalapp;Uid=root;Pwd=root");
+                                   SqlConnection conartist = new SqlConnection("Data Source=GHOST\\SQLEXPRESS;Initial Catalog=festivalapp;User ID=SSAUserV2;Password=P@ssw0rd");
                                     conartist.Open();
-                                    MySqlCommand artistCommand = new MySqlCommand(sqlartist, conartist);
-                                    using (MySqlDataReader readerartist = artistCommand.ExecuteReader())
+                                    SqlCommand artistCommand = new SqlCommand(sqlartist, conartist);
+                                    using (SqlDataReader readerartist = artistCommand.ExecuteReader())
                                     {
                                         while (readerartist.Read())
                                         {
                                             List<string> genres = new List<string>();
                                             string sqlGenres = "SELECT genres.GenreNaam FROM artist_genre INNER JOIN genres on artist_genre.GenreID=genres.Id WHERE ArtistID=" + readerlineup["Artist"].ToString();
-                                            MySqlConnection congenres = new MySqlConnection("Server=localhost;Port=3306;Database=festivalapp;Uid=root;Pwd=root");
+                                            SqlConnection congenres = new SqlConnection("Data Source=GHOST\\SQLEXPRESS;Initial Catalog=festivalapp;User ID=SSAUserV2;Password=P@ssw0rd");
                                             congenres.Open();
-                                            MySqlCommand genresCommand = new MySqlCommand(sqlGenres, congenres);
-                                            using (MySqlDataReader readergenres = genresCommand.ExecuteReader())
+                                            SqlCommand genresCommand = new SqlCommand(sqlGenres, congenres);
+                                            using (SqlDataReader readergenres = genresCommand.ExecuteReader())
                                             {
                                                 while (readergenres.Read())
                                                 {
@@ -80,7 +81,7 @@ namespace JSONapi.Models
                                     }
                                     conartist.Close();
                                     //if (artiest == null) artiest = new ArtiestItem("-1", "", "ERROR", "ERROR artiest is null", "", "", new List<string>());
-                                    lineupItem lineup = new lineupItem(readerlineup["Id"].ToString(), group.UniqueId, readerlineup["DateOfPlay"].ToString(), readerlineup["Start"].ToString(), readerlineup["End"].ToString(), artiest);
+                                    lineupItem lineup = new lineupItem(readerlineup["Id"].ToString(), group.UniqueId, readerlineup["DateOfPlay"].ToString(), readerlineup["Start"].ToString(), readerlineup["Einde"].ToString(), artiest);
                                     lineups.Add(lineup);
 
                                 }
@@ -162,14 +163,14 @@ namespace JSONapi.Models
             this.StageId = stageId;
             this.DateOfPlay = dateOfPlay;
             this.Start = start;
-            this.End = end;
+            this.Einde = end;
 
         }
         public ArtiestItem artiest { get; set; }
         public String StageId { get; private set; }
         public string DateOfPlay { get; private set; }
         public string Start { get; private set; }
-        public string End { get; private set; }
+        public string Einde { get; private set; }
         public string UniqueId { get; private set; }
 
 

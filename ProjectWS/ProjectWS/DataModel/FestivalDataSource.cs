@@ -222,7 +222,7 @@ namespace ProjectWS.DataModel
                                                         itemObject["UniqueId"].GetString(),
                                                        itemObject["DateOfPlay"].GetString(),
                                                        itemObject["Start"].GetString(),
-                                                       itemObject["End"].GetString(), artist));
+                                                       itemObject["Einde"].GetString(), artist));
                 }
                 bool isNotInsertedYet = true;
                 foreach (StageGroup s in this.Stages)
